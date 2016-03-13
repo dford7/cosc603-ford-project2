@@ -10,6 +10,8 @@ import java.util.Iterator;
  */
 public class GameMaster {
 
+	private static final String JAIL = "Jail";
+
 	/** The game master. */
 	private static GameMaster gameMaster;
 	
@@ -76,11 +78,12 @@ public class GameMaster {
         gui.setDrawCardEnabled(false);
         CardCell cell = (CardCell)getCurrentPlayer().getPosition();
         Card card = null;
-        if(cell.getType() == Card.TYPE_CC) {
-            card = getGameBoard().drawCCCard();
+        GameBoard gameBoard2 = getGameBoard();
+		if(cell.getType() == Card.TYPE_CC) {
+            card = gameBoard2.drawCCCard();
             card.applyAction();
         } else {
-            card = getGameBoard().drawChanceCard();
+            card = gameBoard2.drawChanceCard();
             card.applyAction();
         }
         gui.setEndTurnEnabled(true);
@@ -183,8 +186,9 @@ public class GameMaster {
     public void completeTrade(TradeDeal deal) {
         Player seller = getPlayer(deal.getPlayerIndex());
         Cell property = gameBoard.queryCell(deal.getPropertyName());
-        seller.sellProperty(property, deal.getAmount());
-        getCurrentPlayer().buyProperty(property, deal.getAmount());
+        int amount = deal.getAmount();
+		seller.sellProperty(property, amount);
+        getCurrentPlayer().buyProperty(property, amount);
     }
 
     /**
@@ -341,8 +345,9 @@ public class GameMaster {
 	public void movePlayer(Player player, int diceValue) {
 		IOwnable currentPosition = player.getPosition();
 		int positionIndex = gameBoard.queryCellIndex(currentPosition.getName());
-		int newIndex = (positionIndex+diceValue)%gameBoard.getCellNumber();
-		if(newIndex <= positionIndex || diceValue > gameBoard.getCellNumber()) {
+		int cellNumber = gameBoard.getCellNumber();
+		int newIndex = (positionIndex+diceValue)%cellNumber;
+		if(newIndex <= positionIndex || diceValue > cellNumber) {
 			player.setMoney(player.getMoney() + 200);
 		}
 		player.setPosition(gameBoard.getCell(newIndex));
@@ -408,10 +413,11 @@ public class GameMaster {
 	 * @param player the player
 	 */
 	public void sendToJail(Player player) {
-	    int oldPosition = gameBoard.queryCellIndex(getCurrentPlayer().getPosition().getName());
-		player.setPosition(gameBoard.queryCell("Jail"));
+	    String name = getCurrentPlayer().getPosition().getName();
+		int oldPosition = gameBoard.queryCellIndex(name);
+		player.setPosition(gameBoard.queryCell(JAIL));
 		player.setInJail(true);
-		int jailIndex = gameBoard.queryCellIndex("Jail");
+		int jailIndex = gameBoard.queryCellIndex(JAIL);
 		gui.movePlayer(
 		        getPlayerIndex(player),
 		        oldPosition,
