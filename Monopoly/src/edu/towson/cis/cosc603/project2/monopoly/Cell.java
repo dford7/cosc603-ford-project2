@@ -57,8 +57,9 @@ public abstract class Cell implements IOwnable {
 	 * @see edu.towson.cis.cosc603.project2.monopoly.IOwnable#setAvailable(boolean)
 	 */
 	@Override
-	public void setAvailable(boolean available) {
+	public boolean setAvailable(boolean available) {
 		this.available = available;
+		return this.available;
 	}
 	
 	/**

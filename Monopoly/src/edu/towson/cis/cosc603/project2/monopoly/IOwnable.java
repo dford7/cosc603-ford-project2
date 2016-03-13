@@ -39,8 +39,9 @@ public interface IOwnable {
 	 * Sets the available.
 	 *
 	 * @param available the new available
+	 * @return TODO
 	 */
-	void setAvailable(boolean available);
+	boolean setAvailable(boolean available);
 
 	/**
 	 * Sets the theOwner.
